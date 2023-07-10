@@ -52,8 +52,33 @@ int main(void) {
 		*(paddingString+i) = '*';
 	}
 
-	printf("%s\n", inputString);
-	printf("%d\n", longestWord);
+//	printf("%s\n", inputString);
+//	printf("%d\n", longestWord);
+	
+	int line_index = 0;
+	printf("%s\n", paddingString);
+	for (int i = 0; i <= strlen(inputString); i++) {
+		if (i == 0) {
+			printf("* ");
+		}
+		if (*(inputString+i) == ' ') {
+			for (int j = line_index; j < longestWord; j++) {
+				putchar(' ');
+			}
+			printf(" *\n* ");
+			line_index = 0;
+		}
+		else if (*(inputString+i) == '\0') {
+			for (int j = line_index; j < longestWord; j++) {
+				putchar(' ');
+			}
+			printf(" *\n");
+		}
+		else {
+			putchar(*(inputString+i));
+			line_index++;
+		}
+	}
 	printf("%s\n", paddingString);
 	return 0;
 }
