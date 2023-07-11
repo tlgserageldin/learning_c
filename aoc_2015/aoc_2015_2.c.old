@@ -1,0 +1,68 @@
+/* The elves are running low on wrapping paper, and so they need to submit an 
+ * order for more. They have a list of the dimensions (length l, width w, and 
+ * height h) of each present, and only want to order exactly as much as they need.
+ * 
+ * Fortunately, every present is a box (a perfect right rectangular prism), which 
+ * makes calculating the required wrapping paper for each gift a little easier: 
+ * find the surface area of the box, which is 2*l*w + 2*w*h + 2*h*l. The elves 
+ * also need a little extra paper for each present: the area of the smallest side.
+ * 
+ * For example:
+ * 
+ * A present with dimensions 2x3x4 requires 2*6 + 2*12 + 2*8 = 52 square feet of 
+ * wrapping paper plus 6 square feet of slack, for a total of 58 square feet.
+ * A present with dimensions 1x1x10 requires 2*1 + 2*10 + 2*10 = 42 square feet 
+ * of wrapping paper plus 1 square foot of slack, for a total of 43 square feet.
+ * 
+ * All numbers in the elves' list are in feet. How many total square feet of wrapping paper should they order?
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define LINESIZE 20
+
+struct box {
+	double length;
+	double width;
+	double height;
+};
+
+double calc_smallest_side_area(const struct box * b) {
+	if(b->width >= b->length && b->width >= b->height) {
+		return b->length * b->height;
+	}
+	else if(b->length >= b->width && b->length >= b->height) {
+		return b->width * b->height;
+	}
+	else {
+		return b->length * b->width;
+	}
+}
+
+double calc_surface_area(const struct box * current_box) {
+	double smallest_side_area = calc_smallest_side_area(current_box);
+	double length_width = 2 * current_box->length * current_box->width;
+	double width_height = 2 * current_box->height * current_box->width;
+	double length_height = 2 * current_box->height * current_box->length;
+	return length_width + length_height + width_height + smallest_side_area;
+}
+
+int main(void) {
+	FILE *f_input;
+	f_input = fopen("aoc_2015_2_input.txt", "r");
+	char line[LINESIZE];
+	struct box BOX;
+	struct box * b = &BOX;
+	double total_surface_area = 0;
+	while (fgets(line, LINESIZE, f_input) != NULL) {
+		b->length = atof(strtok(line, "x"));
+		b->width = atof(strtok(NULL, "x"));
+		b->height = atof(strtok(NULL, "x"));
+		double surface_area = calc_surface_area(b);
+		total_surface_area += surface_area;
+	}
+	fclose(f_input);
+	printf("total surface area = %lf\n", total_surface_area);
+	return 0;
+}
