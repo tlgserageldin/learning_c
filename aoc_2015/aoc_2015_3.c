@@ -15,25 +15,21 @@ struct House_Node {
 	struct House_Node * next;
 };
 
-void print_house_nodes(struct House_Node * start) {
-	struct House_Node * current = start;
+void print_nodes(struct House_Node * start) {
 	int i = 0;
-	while (current != NULL) {
-		printf("House %d: x=%d, y=%d\n", i, current->x, current->y);
-		current = current->next;
+	while (start != NULL) {
+		printf("House %d: x=%d, y=%d\n", i, start->x, start->y);
+		start = start->next;
 		i++;
 	}
 }
 
-int already_visited(struct House_Node * new_house, struct House_Node * start) {
-	struct House_Node * current;
-	current = start;
-
-	while (current != NULL) {
-		if (current->x == new_house->x && current->y == new_house->y) {
+int check_visited(struct House_Node * new_house, struct House_Node * start) {
+	while (start != NULL) {
+		if (start->x == new_house->x && start->y == new_house->y) {
 			return TRUE;
 		}
-		current = current->next;
+		start = start->next;
 	}
 
 	return FALSE;
@@ -44,14 +40,21 @@ void init_house(struct House_Node * house) {
 	house->next = NULL;
 }
 
-int number_of_houses(struct House_Node * head) {
+int count_nodes(struct House_Node * head) {
 	int counter = 0;
-	struct House_Node * current = head;
-	while (current != NULL) {
+	while (head != NULL) {
 		counter++;
-		current = current->next;
+		head = head->next;
 	}
 	return counter;
+}
+
+void push_node(struct House_Node ** head, int new_x, int new_y) {
+	struct House_Node * new_house = malloc(sizeof(struct House_Node));
+	new_house->x = new_x;
+	new_house->y = new_y;
+	new_house->next = *head;
+	*head = new_house;
 }
 
 int main(void) {
@@ -84,14 +87,10 @@ int main(void) {
 				printf("encountered unexpected character, exiting...\n");
 				exit(1);
 		}
-		if (!already_visited(current_house, head)) {
-			struct House_Node * new_house = malloc(sizeof(struct House_Node));
-			new_house->x = current_house->x;
-			new_house->y = current_house->y;
-			new_house->next = head;
-			head = new_house;
+		if (!check_visited(current_house, head)) {
+			push_node(&head, current_house->x, current_house->y);
 		}
 	}
-	printf("Number of Houses: %d\n", number_of_houses(head));
+	printf("Number of Houses: %d\n", count_nodes(head));
 	return 0;
 }
