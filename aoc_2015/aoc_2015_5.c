@@ -20,10 +20,9 @@ int has_2char_substring(char* string, char* substring);
 int is_element(char c, char* char_array);
 void test_has_2char_substring(void);
 void test_has_three_vowels(void);
+void test_has_repeated_char(void);
 
 int main(void) {
-	test_has_three_vowels();
-	test_has_2char_substring();
 	return 0;
 }
 
@@ -118,4 +117,21 @@ void test_has_2char_substring(void) {
 	has_2char_substring(test_string2, substring)? printf("find in middle failed.\n"): printf("no substring passed.\n");
 	has_2char_substring(test_string3, substring)? printf("find at front passed.\n"): printf("find at front failed.\n");
 	has_2char_substring(test_string4, substring)? printf("find at end passed\n"): printf("find at end failed\n");
+}
+
+void test_has_repeated_char(void) {
+	char test_string1[10];
+	char test_string2[10];
+	char test_string3[10];
+	char test_string4[10];
+	strcpy(test_string1, "testsstde"); //test for middle
+	strcpy(test_string2, "testsades"); //test for no repeat
+	strcpy(test_string3, "xxstssdes"); //test for repeat in front
+	strcpy(test_string4, "axstssdss"); //test for repeat in end
+	printf("Testing has_repeated_char.\n");
+	has_repeated_char(test_string1)? printf("repeat in middle test has passed.\n"): printf("repeat in middle failed.\n");
+	has_repeated_char(test_string2)? printf("no repeat has failed.\n"): printf("no repeat has passed.\n");
+	has_repeated_char(test_string3)? printf("repeat in the front has passed.\n"): printf("repeat in the front has failed.\n");
+	has_repeated_char(test_string4)? printf("repeat in the end has passed.\n"): printf("repeat at the end has failed.\n");
+	has_repeated_char("")? printf("empty string test has failed.\n"): printf("empty string test has passed.\n");
 }
