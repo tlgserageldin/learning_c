@@ -14,6 +14,8 @@ It does not contain the strings ab, cd, pq, or xy, even if they are part of one 
 #define TRUE 1
 #define FALSE 0
 
+#define SIZE 100
+
 int has_repeated_char(char* string);
 int has_three_vowels(char* string);
 int has_2char_substring(char* string, char* substring);
@@ -23,6 +25,31 @@ void test_has_three_vowels(void);
 void test_has_repeated_char(void);
 
 int main(void) {
+	FILE* f_input;
+	f_input = fopen("aoc_2015_5_input.txt", "r");
+	char line[SIZE];
+	char b_strings[4][3] = {{'a', 'b', '\0'}, 
+						    {'c', 'd', '\0'},
+						    {'p', 'q', '\0'},
+						    {'x', 'y', '\0'}};
+	int ns_count = 0;
+	while ((fgets(line, SIZE, f_input)) != NULL) {
+		line[strlen(line)-1] = '\0';
+		if (has_repeated_char(line) && has_three_vowels(line)) {
+			int bs_count = 0;
+			for (int i = 0; i<4; i++) {
+				if (has_2char_substring(line, *(b_strings+i))) {
+					bs_count++;
+				}
+			}
+			if (bs_count == 0) {
+				ns_count++;
+			}
+		}
+	}
+	fclose(f_input);
+	printf("nice strings found: %d\n", ns_count);
+	printf("\n\n");
 	return 0;
 }
 
