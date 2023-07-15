@@ -14,7 +14,7 @@ It does not contain the strings ab, cd, pq, or xy, even if they are part of one 
 #define TRUE 1
 #define FALSE 0
 
-#define SIZE 100
+#define SIZE 17
 
 int has_repeated_char(char* string);
 int has_three_vowels(char* string);

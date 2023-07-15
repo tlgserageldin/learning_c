@@ -7,7 +7,7 @@ It contains at least one letter which repeats with exactly one letter between th
 #include <stdio.h>
 #include <string.h>
 
-#define LINESIZE 20
+#define LINESIZE 17
 #define TRUE 1
 #define FALSE 0
 
@@ -31,4 +31,8 @@ int main(void) {
 }
 
 int has_two_letters_twice(char *line) {
+	// linked list of every unique pairs
+	// every node has its char[] and count
+	// at any node.count > 1
+	// return TRUE
 }
