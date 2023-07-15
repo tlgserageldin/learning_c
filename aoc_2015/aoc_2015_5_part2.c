@@ -11,6 +11,14 @@ It contains at least one letter which repeats with exactly one letter between th
 #define TRUE 1
 #define FALSE 0
 
+struct TwoCharNode {
+	char first_letter;
+	char second_letter;
+	int count;
+	struct TwoCharNode *next;
+};
+
+void init_TwoCharNode(struct TwoCharNode* node);
 int has_two_letters_twice(char *line);
 int has_repeat_with_one_inbetween(char *line);
 
@@ -36,3 +44,11 @@ int has_two_letters_twice(char *line) {
 	// at any node.count > 1
 	// return TRUE
 }
+
+void init_TwoCharNode(struct TwoCharNode* node) {
+	node->count = 0;
+	node->next = NULL;
+	node->first_letter = '\0';
+	node->second_letter = '\0';
+}
+
