@@ -4,6 +4,7 @@ It contains a pair of any two letters that appears at least twice in the string 
 like xyxy (xy) or aabcdefgaa (aa), but not like aaa (aa, but it overlaps).
 It contains at least one letter which repeats with exactly one letter between them, like xyx, abcdefeghi (efe), or even aaa.
 */
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -51,21 +52,27 @@ if any node.count > 1
 	return TRUE
 */
 int has_two_letters_twice(char *line) {
-	char *first, *second;
-	first = line;
-	second = first+1;
-	struct CharPair *pairs = malloc(sizeof(struct CharPair));
-	pairs->first_letter = *first;
-	pairs->second_letter = *second;
-	pairs->count = 0;
-	while (*second != '\0') {
-	
+	if (line == NULL || strlen(line) < 2) { //unassigned pointer or string with <=1 char
+		return FALSE;
 	}
+	char *one = line;
+	char *two = line++;
+	size_t n = 1;
+	struct CharPair *pairs = calloc(n, sizeof(struct CharPair)); // will assue enough mem for this array
+	pairs[0].first_letter = *one;
+	pairs[0].second_letter = *two;
+	pairs[0].count++; // init the first pair in array
+	while (*two != '\0') { //no more pairs of char
+		one = two;
+		two++;
+
+	}
+	free(pairs); //put away toys
 }
 
 int cmp_charpair(void const *a, void const *b) {
-	struct CharPair *key = (struct CharPair *) a;
-	struct CharPair *elem = (struct CharPair *) b;
+	struct CharPair const *key = (struct CharPair *) a;
+	struct CharPair const *elem = (struct CharPair *) b;
 	if (key->first_letter < elem->first_letter) {
 		return -1;
 	} else if (key->first_letter > elem->first_letter) {
