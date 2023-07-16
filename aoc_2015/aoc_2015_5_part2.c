@@ -12,12 +12,13 @@ It contains at least one letter which repeats with exactly one letter between th
 #define TRUE 1
 #define FALSE 0
 
-struct TwoCharPairs {
+struct CharPair {
 	char first_letter;
 	char second_letter;
 	int count;
 };
 
+int cmp_charpair(const void *a, const void *b);
 int has_two_letters_twice(char *line);
 int has_repeat_with_one_inbetween(char *line);
 
@@ -38,9 +39,8 @@ int main(void) {
 	return 0;
 }
 
-int has_two_letters_twice(char *line) {
 /*
-create pointers and step thru the loaded char array
+create pointers and step thru the passed char array
 until second letter pointer == NULL
 	binary search array for pair
 	if !found
@@ -50,5 +50,33 @@ until second letter pointer == NULL
 if any node.count > 1
 	return TRUE
 */
-	return FALSE;
+int has_two_letters_twice(char *line) {
+	char *first, *second;
+	first = line;
+	second = first+1;
+	struct CharPair *pairs = malloc(sizeof(struct CharPair));
+	pairs->first_letter = *first;
+	pairs->second_letter = *second;
+	pairs->count = 0;
+	while (*second != '\0') {
+	
+	}
+}
+
+int cmp_charpair(void const *a, void const *b) {
+	struct CharPair *key = (struct CharPair *) a;
+	struct CharPair *elem = (struct CharPair *) b;
+	if (key->first_letter < elem->first_letter) {
+		return -1;
+	} else if (key->first_letter > elem->first_letter) {
+		return 1;
+	} else {
+		if (key->second_letter < elem->second_letter) {
+			return -1;
+		} else if (key->second_letter > elem->second_letter) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
 }
