@@ -29,7 +29,7 @@ int main(void) {
 	char line[LINESIZE];
 	int ns = 0;
 
-	while ((fgets(line, LINESIZE, f_input)) != NULL) {
+	while ((fgets(line, LINESIZE+1, f_input)) != NULL) {
 		line[strlen(line)-1] = '\0';
 		if (has_two_letters_twice(line) && has_repeat_with_one_inbetween(line)) {
 			ns++;
@@ -40,34 +40,46 @@ int main(void) {
 	return 0;
 }
 
-/*
-create pointers and step thru the passed char array
-until second letter pointer == NULL
-	binary search array for pair
-	if !found
-		append to end and quicksort array
-	else
-		TwoCharPair->count++
-if any node.count > 1
-	return TRUE
-*/
+// like xyxy (xy) or aabcdefgaa (aa), but not like aaa (aa, but it overlaps).
+// intput lines guaranteed to be 16 char + '\0'
 int has_two_letters_twice(char *line) {
-	if (line == NULL || strlen(line) < 2) { //unassigned pointer or string with <=1 char
-		return FALSE;
+	if (line == NULL) {
+		return 0;
 	}
+	size_t n = strlen(line)/2; // should always be 8
 	char *one = line;
 	char *two = line++;
-	size_t n = 1;
-	struct CharPair *pairs = calloc(n, sizeof(struct CharPair)); // will assue enough mem for this array
+	struct CharPair *pairs = calloc(n, sizeof(struct CharPair));
 	pairs[0].first_letter = *one;
 	pairs[0].second_letter = *two;
-	pairs[0].count++; // init the first pair in array
-	while (*two != '\0') { //no more pairs of char
-		one = two;
-		two++;
-
+	for (int i = 0; i < n; i++) {
+		pairs[i].count = 1;
 	}
-	free(pairs); //put away toys
+	size_t foundp = 1;
+	for (int i = 1; i < n; i++) {
+		struct CharPair key = { .first_letter=*(one+=2), .second_letter=*(two+=2) };
+		struct CharPair *res = bsearch(&key, pairs, n, sizeof(struct CharPair), cmp_charpair);
+		if (res) {
+			res->count++;
+		} else {
+			pairs[foundp] = *res;
+			pairs[foundp].count = 1;
+			foundp++;
+		}
+	}
+	if (foundp == n) {
+		qsort(pairs, n, sizeof(struct CharPair), cmp_charpair);
+	} else {
+		pairs = realloc(pairs, foundp * sizeof(struct CharPair));
+		qsort(pairs, foundp, sizeof(struct CharPair), cmp_charpair);
+	}
+	for (int i = 0; i < foundp; i++) {
+		if (pairs[i].count > 1) {
+			return 1;
+		}
+	}
+	free(pairs);
+	return 0;
 }
 
 int cmp_charpair(void const *a, void const *b) {
