@@ -43,13 +43,17 @@ int main(void) {
 // like xyxy (xy) or aabcdefgaa (aa), but not like aaa (aa, but it overlaps).
 // intput lines guaranteed to be 16 char + '\0'
 int has_two_letters_twice(char *line) {
-	if (line == NULL) {
+	if (line == NULL || strlen(line) != 16) { //should be guaranteed to not be null, just in case
 		return 0;
 	}
 	size_t n = strlen(line)/2; // should always be 8
 	char *one = line;
 	char *two = line++;
 	struct CharPair *pairs = calloc(n, sizeof(struct CharPair));
+	if (pairs == NULL) {
+		printf("failed calloc call, exiting...\n\n");
+		exit(1);
+	}
 	pairs[0].first_letter = *one;
 	pairs[0].second_letter = *two;
 	for (int i = 0; i < n; i++) {
@@ -71,6 +75,10 @@ int has_two_letters_twice(char *line) {
 		qsort(pairs, n, sizeof(struct CharPair), cmp_charpair);
 	} else {
 		pairs = realloc(pairs, foundp * sizeof(struct CharPair));
+		if (pairs == NULL) {
+			printf("failed realloc call, exiting...\n\n");
+			exit(1);
+		}
 		qsort(pairs, foundp, sizeof(struct CharPair), cmp_charpair);
 	}
 	for (int i = 0; i < foundp; i++) {
