@@ -30,24 +30,24 @@ int has_two_letters_twice(char *line);
 int has_repeat_with_one_inbetween(char *line);
 
 int main(void) {
-	//FILE *f_input;
-	//f_input = fopen("aoc_2015_5_input.txt", "r");
-	//if (f_input == NULL) {
-	//	printf("failed to open file, exiting...\n");
-	//	exit(1);
-	//}
-	//char line[LINESIZE];
-	//int ns = 0;
-	//while ((fgets(line, LINESIZE+1, f_input)) != NULL) {
-	//	line[strlen(line)-1] = '\0';
-	//	printf("%s\n", line);
-	//	if (has_two_letters_twice(line) && has_repeat_with_one_inbetween(line)) {
-	//		ns++;
-	//	}
-	//}
-	//fclose(f_input);
-	//printf("\n\nnice strings: %d\n\n", ns);
-	//return 0;
+	// FILE *f_input;
+	// f_input = fopen("aoc_2015_5_input.txt", "r");
+	// if (f_input == NULL) {
+	// 	printf("failed to open file, exiting...\n");
+	// 	exit(1);
+	// }
+	// char line[LINESIZE];
+	// int ns = 0;
+	// while ((fgets(line, LINESIZE+1, f_input)) != NULL) {
+	// 	line[strlen(line)-1] = '\0';
+	// 	printf("%s\n", line);
+	// 	if (has_two_letters_twice(line) && has_repeat_with_one_inbetween(line)) {
+	// 		ns++;
+	// 	}
+	// }
+	// fclose(f_input);
+	// printf("\n\nnice strings: %d\n\n", ns);
+	// return 0;
 	test_has_two_letters_twice();
 }
 
@@ -58,32 +58,36 @@ int has_two_letters_twice(char *line) {
 		return 0;
 	}
 	char *first, *second;
-	size_t foundp = 0;
-	struct CharPair *pairs = calloc(MAXCHARPAIRS, sizeof(struct CharPair));
+	size_t npairs = 1;
+	struct CharPair *pairs = malloc(sizeof(struct CharPair));
 	if (pairs == NULL) {
-		printf("failed calloc call, exiting...\n\n");
+		printf("failed malloc call, exiting...\n\n");
 		exit(1);
 	}
-	for (int i = 0; i < MAXCHARPAIRS; i++) {
+	pairs[0].first_letter = pairs[0].second_letter = '\0';
+	pairs[0].indexf = 0;
+	for (int i = 0; i < strlen(line)-1; i++) {
 		first = line+i;
 		second = line+i+1;
 		struct CharPair key = {.first_letter=*first, .second_letter=*second};
-		struct CharPair *res = bsearch(&key, pairs, MAXCHARPAIRS, sizeof(struct CharPair), cmp_charpair);
+		struct CharPair *res = bsearch(&key, pairs, npairs, sizeof(struct CharPair), cmp_charpair);
 		if (res) {
 			printf("found pair %c %c\n", res->first_letter, res->second_letter);
-			if ((i-res->indexf) < 2) {
-				printf("pair overlapped, doesnt count\n");
-			} else {
-				printf("not too close, returning true\n");
+			if (!((i-res->indexf) < 2)) {
 				return TRUE;
 			}
+			printf("pair overlapped, doesnt count\n");
 		} else {
 			printf("did not find %c %c, adding to array\n", *first, *second);
-			pairs[foundp].first_letter = *first;
-			pairs[foundp].second_letter = *second;
-			pairs[foundp].indexf = i;
-			foundp++;
-			qsort(pairs, MAXCHARPAIRS, sizeof(struct CharPair), cmp_charpair);
+			pairs = realloc(pairs, npairs++ * sizeof(struct CharPair));
+			if (pairs == NULL) {
+				printf("failed realloc call, exiting...\n");
+				exit(1);
+			}
+			pairs[npairs-1].first_letter = *first;
+			pairs[npairs-1].second_letter = *second;
+			pairs[npairs-1].indexf = i;
+			qsort(pairs, npairs, sizeof(struct CharPair), cmp_charpair);
 		}
 	}
 	free(pairs);
