@@ -44,8 +44,26 @@ void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoor
 int parse_for_command(char *line);
 int *parse_for_arguments(char *line);
 int is_element(char e, char *list, int len);
+unsigned long count_lights(int array[1000][1000]);
 
 int main(void) {
+	int lights[1000][1000];
+	char line[MAXLINELEN];
+	FILE *input = fopen("aoc_2015_6_input.txt", "r");
+	int *args;
+	while ((fgets(line, MAXLINELEN-1, input)) != NULL) {
+		line[strlen(line)-1] = '\0';
+		args = parse_for_arguments(line);
+		if (parse_for_command(line) == TOGGLE) {
+			toggle_lights(lights, *(args), *(args+1), *(args+2), *(args+3));
+		} else if (parse_for_command(line) == TURNON) {
+			turnon_lights(lights, *(args), *(args+1), *(args+2), *(args+3));
+		} else {
+			turnoff_lights(lights, *(args), *(args+1), *(args+2), *(args+3));
+		}
+	}
+	printf("number of lights on: %lu\n",count_lights(lights));
+	fclose(input);
 	return 0;
 }
 
@@ -149,4 +167,16 @@ int is_element(char e, char *list, int len) {
 		}
 	}
 	return FALSE;
+}
+
+unsigned long count_lights(int array[1000][1000]) {
+	unsigned long count = 0;
+	for (int i = 0; i < 1000; i++) {
+		for (int j = 0; j < 1000; j++) {
+			if (array[i][j] == ON) {
+				count++;
+			}
+		}
+	}
+	return count;
 }
