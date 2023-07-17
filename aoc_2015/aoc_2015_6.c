@@ -20,6 +20,65 @@ For example:
 
 After following the instructions, how many lights are lit?
 */
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#define ON 1
+#define OFF 0
+#define TOGGLE 0
+#define TURNON 1
+#define TURNOFF 2
+
+void toggle_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
+void turnon_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
+void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
+int parse_input(char *line);
+
 int main(void) {
+	int lights[1000][1000];
 	return 0;
 }
+
+void toggle_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
+	for (int i = fcoord_y; i <= tcoord_y; i++) {
+		for (int j = fcoord_x; j <= tcoord_x; j++) {
+			if (array[i][j] == ON) {
+				array[i][j] = OFF;
+			} else {
+				array[i][j] = ON;
+			}
+		}
+	}
+}
+void turnon_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
+	for (int i = fcoord_y; i <= tcoord_y; i++) {
+		for (int j = fcoord_x; j <= tcoord_x; j++) {
+				array[i][j] = ON;
+		}
+	}
+}
+
+void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
+	for (int i = fcoord_y; i <= tcoord_y; i++) {
+		for (int j = fcoord_x; j <= tcoord_x; j++) {
+				array[i][j] = OFF;
+		}
+	}
+}
+
+int parse_input(char *line) {
+	char string[10];
+	for (int i = 0; i < 10; i++) {
+		string[i] = *(line+i);
+		if (string[i] == ' ') {
+			string[i] = '\0';
+			break;
+		}
+	}
+	if (!strcmp(string, "toggle")) {
+	} else {
+		return TOGGLE;
+	}
+}
+
