@@ -11,18 +11,20 @@ It contains at least one letter which repeats with exactly one letter between th
 #include <string.h>
 
 #define LINESIZE 17
-#define MAXCHARPAIRS 122
+#define MAXCHARPAIRS 15
 #define TRUE 1
 #define FALSE 0
 
 struct CharPair {
 	char first_letter;
 	char second_letter;
-	int count;
+	int indexf;
 };
 
 void test_has_two_letters_twice(void);
+void test_cmp_charpair(void);
 void test_has_repeat_with_one_inbetween(void);
+void print_charpair_struct(struct CharPair *pair);
 int cmp_charpair(const void *a, const void *b);
 int has_two_letters_twice(char *line);
 int has_repeat_with_one_inbetween(char *line);
@@ -30,10 +32,15 @@ int has_repeat_with_one_inbetween(char *line);
 int main(void) {
 	//FILE *f_input;
 	//f_input = fopen("aoc_2015_5_input.txt", "r");
+	//if (f_input == NULL) {
+	//	printf("failed to open file, exiting...\n");
+	//	exit(1);
+	//}
 	//char line[LINESIZE];
 	//int ns = 0;
 	//while ((fgets(line, LINESIZE+1, f_input)) != NULL) {
 	//	line[strlen(line)-1] = '\0';
+	//	printf("%s\n", line);
 	//	if (has_two_letters_twice(line) && has_repeat_with_one_inbetween(line)) {
 	//		ns++;
 	//	}
@@ -50,44 +57,33 @@ int has_two_letters_twice(char *line) {
 	if (line == NULL || strlen(line) != LINESIZE-1) { //should be guaranteed to not be null, just in case
 		return 0;
 	}
-	size_t n = MAXCHARPAIRS;
-	char *one = line;
-	char *two = line++;
-	struct CharPair *pairs = calloc(n, sizeof(struct CharPair));
+	char *first, *second;
+	size_t foundp = 0;
+	struct CharPair *pairs = calloc(MAXCHARPAIRS, sizeof(struct CharPair));
 	if (pairs == NULL) {
 		printf("failed calloc call, exiting...\n\n");
 		exit(1);
 	}
-	pairs[0].first_letter = *one;
-	pairs[0].second_letter = *two;
-	for (int i = 0; i < n; i++) {
-		pairs[i].count = 1;
-	}
-	size_t foundp = 1;
-	for (int i = 1; i < n; i++) {
-		struct CharPair key = { .first_letter=*(one++), .second_letter=*(two++) };
-		struct CharPair *res = bsearch(&key, pairs, n, sizeof(struct CharPair), cmp_charpair);
+	for (int i = 0; i < MAXCHARPAIRS; i++) {
+		first = line+i;
+		second = line+i+1;
+		struct CharPair key = {.first_letter=*first, .second_letter=*second};
+		struct CharPair *res = bsearch(&key, pairs, MAXCHARPAIRS, sizeof(struct CharPair), cmp_charpair);
 		if (res) {
-			res->count++;
+			printf("found pair %c %c\n", res->first_letter, res->second_letter);
+			if ((i-res->indexf) < 2) {
+				printf("pair overlapped, doesnt count\n");
+			} else {
+				printf("not too close, returning true\n");
+				return TRUE;
+			}
 		} else {
-			pairs[foundp] = *res;
-			pairs[foundp].count = 1;
+			printf("did not find %c %c, adding to array\n", *first, *second);
+			pairs[foundp].first_letter = *first;
+			pairs[foundp].second_letter = *second;
+			pairs[foundp].indexf = i;
 			foundp++;
-		}
-	}
-	if (foundp == n) {
-		qsort(pairs, n, sizeof(struct CharPair), cmp_charpair);
-	} else {
-		pairs = realloc(pairs, foundp * sizeof(struct CharPair));
-		if (pairs == NULL) {
-			printf("failed realloc call, exiting...\n\n");
-			exit(1);
-		}
-		qsort(pairs, foundp, sizeof(struct CharPair), cmp_charpair);
-	}
-	for (int i = 0; i < foundp; i++) {
-		if (pairs[i].count > 1) {
-			return TRUE;
+			qsort(pairs, MAXCHARPAIRS, sizeof(struct CharPair), cmp_charpair);
 		}
 	}
 	free(pairs);
@@ -114,6 +110,9 @@ int cmp_charpair(void const *a, void const *b) {
 
 // It contains at least one letter which repeats with exactly one letter between them, like xyx, abcdefeghi (efe), or even aaa.
 int has_repeat_with_one_inbetween(char *line) {
+	if (!strcmp(line, "")) {
+		return FALSE;
+	}
 	char *c = line;
 	for (int i = 0; i < strlen(line)-2; i++) {
 		if (*(c+i) == *(c+i+2)) {
@@ -125,14 +124,46 @@ int has_repeat_with_one_inbetween(char *line) {
 
 void test_has_two_letters_twice(void) {
 // only expecting 16 len str
-	char *test_str = "aabcdefvhijklmaa";
-	char *empty_str = "";
+	char *test_str = "aabcdefvhijklmaa"; //aa
+	char *empty_str = ""; //empty
 	char *test_str2 = "abbbcdefghijklmn";
-	char *test_str3 = "abcdefbclkjhuionp";
+	char *test_str3 = "abcdefbclkjhuion"; //should work bc is there twice
+	char *test_str4 = "aaaaefbclkjhuion"; //aaaa should work
 	assert(has_two_letters_twice(test_str));
 	assert(!has_two_letters_twice(empty_str));
 	assert(!has_two_letters_twice(test_str2));
 	assert(has_two_letters_twice(test_str3));
+	assert(has_two_letters_twice(test_str4));
 }
 void test_has_repeat_with_one_inbetween(void) {
+	char *test_str = "abacdefabcdefghi";//repeat at beginning
+	assert(has_repeat_with_one_inbetween(test_str)); 
+	char *empty_str = ""; //empty
+	assert(!has_repeat_with_one_inbetween(empty_str)); 
+	char *test_str2 = "abcdefgabcdefcac"; //repeat at end
+	assert(has_repeat_with_one_inbetween(test_str2));
+	char *test_str3 = "abcdefabcdefghij"; //no repeate
+	assert(!has_repeat_with_one_inbetween(test_str3));
+}
+
+void print_charpair_struct(struct CharPair *pair) {
+	printf("charpair first char: %c, charpair second char: %c, count: %d\n", pair->first_letter, pair->second_letter, pair->indexf);
+}
+
+void test_cmp_charpair(void) {
+	struct CharPair a = { .first_letter='a', .second_letter='b' };
+	struct CharPair b = { .first_letter='a', .second_letter='b' };
+	assert(cmp_charpair(&a, &b) == 0);
+	struct CharPair c = { .first_letter='a' };
+	struct CharPair d = { .first_letter='b' };
+	assert(cmp_charpair(&c, &d) == -1);
+	struct CharPair e = { .first_letter='a', .second_letter='a' };
+	struct CharPair f = { .first_letter='a', .second_letter='b' };
+	assert(cmp_charpair(&e, &f) == -1);
+	struct CharPair g = { .first_letter='b', .second_letter='a' };
+	struct CharPair h = { .first_letter='a', .second_letter='b' };
+	assert(cmp_charpair(&g, &h) == 1);
+	struct CharPair i = { .first_letter='b', .second_letter='a' };
+	struct CharPair j = { .first_letter='a', .second_letter='b' };
+	assert(cmp_charpair(&i, &j) == 1);
 }
