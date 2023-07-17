@@ -30,25 +30,23 @@ int has_two_letters_twice(char *line);
 int has_repeat_with_one_inbetween(char *line);
 
 int main(void) {
-	// FILE *f_input;
-	// f_input = fopen("aoc_2015_5_input.txt", "r");
-	// if (f_input == NULL) {
-	// 	printf("failed to open file, exiting...\n");
-	// 	exit(1);
-	// }
-	// char line[LINESIZE];
-	// int ns = 0;
-	// while ((fgets(line, LINESIZE+1, f_input)) != NULL) {
-	// 	line[strlen(line)-1] = '\0';
-	// 	printf("%s\n", line);
-	// 	if (has_two_letters_twice(line) && has_repeat_with_one_inbetween(line)) {
-	// 		ns++;
-	// 	}
-	// }
-	// fclose(f_input);
-	// printf("\n\nnice strings: %d\n\n", ns);
-	// return 0;
-	test_has_two_letters_twice();
+	FILE *f_input;
+	f_input = fopen("aoc_2015_5_input.txt", "r");
+	if (f_input == NULL) {
+		printf("failed to open file, exiting...\n");
+		exit(1);
+	}
+	char line[LINESIZE];
+	int ns = 0;
+	while ((fgets(line, LINESIZE+1, f_input)) != NULL) {
+		line[strlen(line)-1] = '\0';
+		if (has_two_letters_twice(line) && has_repeat_with_one_inbetween(line)) {
+			ns++;
+		}
+	}
+	fclose(f_input);
+	printf("\n\nnice strings: %d\n\n", ns);
+	return 0;
 }
 
 // like xyxy (xy) or aabcdefgaa (aa), but not like aaa (aa, but it overlaps).
@@ -72,14 +70,16 @@ int has_two_letters_twice(char *line) {
 		struct CharPair key = {.first_letter=*first, .second_letter=*second};
 		struct CharPair *res = bsearch(&key, pairs, npairs, sizeof(struct CharPair), cmp_charpair);
 		if (res) {
-			printf("found pair %c %c\n", res->first_letter, res->second_letter);
+			//printf("found pair %c %c\n", res->first_letter, res->second_letter);
 			if (!((i-res->indexf) < 2)) {
+				//printf("pair doesnt overlap, returning true\n\n");
 				return TRUE;
 			}
-			printf("pair overlapped, doesnt count\n");
+			//printf("pair overlapped, doesnt count\n");
 		} else {
-			printf("did not find %c %c, adding to array\n", *first, *second);
-			pairs = realloc(pairs, npairs++ * sizeof(struct CharPair));
+			//printf("did not find %c %c, adding to array\n", *first, *second);
+			npairs++;
+			pairs = realloc(pairs, (npairs * sizeof(struct CharPair)));
 			if (pairs == NULL) {
 				printf("failed realloc call, exiting...\n");
 				exit(1);
