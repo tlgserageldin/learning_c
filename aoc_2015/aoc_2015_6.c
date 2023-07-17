@@ -27,28 +27,25 @@ After following the instructions, how many lights are lit?
 
 #define ON 1
 #define OFF 0
+
+#define TRUE 1
+#define FALSE 0
+
 #define TOGGLE 0
 #define TURNON 1
 #define TURNOFF 2
+
 #define MAXLINELEN 100
+#define MAXARGSSIZE 20
 
 void toggle_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
 void turnon_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
 void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
-int parse_input(char *line);
+int parse_for_command(char *line);
+int *parse_for_arguments(char *line);
+int is_element(char e, char *list, int len);
 
 int main(void) {
-	//int lights[1000][1000];
-	//FILE *input = fopen("aoc_2015_6_input.txt", "r");
-	//if (input == NULL) {
-	//	printf("failed to open file, exiting...\n");
-	//	exit(1);
-	//}
-	//char line[MAXLINELEN];
-	//while ((fgets(line, MAXLINELEN, input)) != NULL) {
-	//	line[strlen(line) - 1] = '\0';
-	//}
-	//fclose(input);
 	return 0;
 }
 
@@ -79,7 +76,7 @@ void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoor
 	}
 }
 
-int parse_input(char *line) {
+int parse_for_command(char *line) {
 	if (line == NULL) {
 		printf("passed char* is null, exiting...\n");
 		exit(1);
@@ -113,3 +110,43 @@ int parse_input(char *line) {
 	}
 }
 
+int *parse_for_arguments(char *line) {
+	char *c = line;
+	char nums[10] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+	char argsf[MAXARGSSIZE], argst[MAXARGSSIZE]; 
+	static int args[4];
+	while (!is_element(*c, nums, 10)) {
+		c++;
+	}
+	int i = 0;
+	while (*c != ' ') {
+		argsf[i] = *c;
+		c++;
+		i++;
+	}
+	argsf[i++] = '\0';
+	while (!is_element(*c, nums, 10)) {
+		c++;
+	}
+	i = 0;
+	while (*c != ' ') {
+		argst[i] = *c;
+		c++;
+		i++;
+	}
+	argst[i++] = '\0';
+	args[0] = atoi(strtok(argsf, ","));
+	args[1] = atoi(strtok(NULL, "\0"));
+	args[2] = atoi(strtok(argst, ","));
+	args[3] = atoi(strtok(NULL, "\0"));
+	return args;
+}
+
+int is_element(char e, char *list, int len) {
+	for (int i = 0; i < len; i++) {
+		if (e == list[i]) {
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
