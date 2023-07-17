@@ -20,6 +20,7 @@ For example:
 
 After following the instructions, how many lights are lit?
 */
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -29,6 +30,7 @@ After following the instructions, how many lights are lit?
 #define TOGGLE 0
 #define TURNON 1
 #define TURNOFF 2
+#define MAXLINELEN 100
 
 void toggle_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
 void turnon_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
@@ -36,7 +38,17 @@ void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoor
 int parse_input(char *line);
 
 int main(void) {
-	int lights[1000][1000];
+	//int lights[1000][1000];
+	//FILE *input = fopen("aoc_2015_6_input.txt", "r");
+	//if (input == NULL) {
+	//	printf("failed to open file, exiting...\n");
+	//	exit(1);
+	//}
+	//char line[MAXLINELEN];
+	//while ((fgets(line, MAXLINELEN, input)) != NULL) {
+	//	line[strlen(line) - 1] = '\0';
+	//}
+	//fclose(input);
 	return 0;
 }
 
@@ -68,17 +80,36 @@ void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoor
 }
 
 int parse_input(char *line) {
-	char string[10];
-	for (int i = 0; i < 10; i++) {
-		string[i] = *(line+i);
-		if (string[i] == ' ') {
-			string[i] = '\0';
-			break;
-		}
+	if (line == NULL) {
+		printf("passed char* is null, exiting...\n");
+		exit(1);
 	}
-	if (!strcmp(string, "toggle")) {
-	} else {
+	char fword[10];
+	char *c = line;
+	int i = 0;
+	while (*c != ' ') {
+		fword[i] = *c;
+		c++;
+		i++;
+	}
+	fword[i++] = '\0';
+	c++;
+	if (strcmp(fword, "toggle") == 0) {
 		return TOGGLE;
+	} else {
+		i = 0;
+		while (*c != ' ') {
+			fword[i] = *c;
+			c++;
+			i++;
+		}
+		fword[i++] = '\0';
+		if (strcmp(fword, "on") == 0) {
+			return TURNON;
+		} else {
+			return TURNOFF;
+		}
+	
 	}
 }
 
