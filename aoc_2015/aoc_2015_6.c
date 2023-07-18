@@ -67,7 +67,6 @@ int main(void) {
 		} else {
 			turnoff_lights(lights, *(args), *(args+1), *(args+2), *(args+3));
 		}
-		printf("\n");
 	}
 	printf("number of lights on: %lu\n",count_lights(lights));
 	fclose(input);
