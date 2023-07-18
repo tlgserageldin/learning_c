@@ -48,19 +48,26 @@ unsigned long count_lights(int array[1000][1000]);
 
 int main(void) {
 	int lights[1000][1000];
+	turnoff_lights(lights, 0, 0, 999, 999);
+	assert(count_lights(lights) == 0);
 	char line[MAXLINELEN];
 	FILE *input = fopen("aoc_2015_6_input.txt", "r");
-	int *args;
+	if (input == NULL) {
+		printf("failed to open file, exiting...\n");
+		exit(1);
+	}
 	while ((fgets(line, MAXLINELEN-1, input)) != NULL) {
 		line[strlen(line)-1] = '\0';
-		args = parse_for_arguments(line);
-		if (parse_for_command(line) == TOGGLE) {
+		int cmd = parse_for_command(line);
+		int *args = parse_for_arguments(line);
+		if (cmd == TOGGLE) {
 			toggle_lights(lights, *(args), *(args+1), *(args+2), *(args+3));
-		} else if (parse_for_command(line) == TURNON) {
+		} else if (cmd == TURNON) {
 			turnon_lights(lights, *(args), *(args+1), *(args+2), *(args+3));
 		} else {
 			turnoff_lights(lights, *(args), *(args+1), *(args+2), *(args+3));
 		}
+		printf("\n");
 	}
 	printf("number of lights on: %lu\n",count_lights(lights));
 	fclose(input);
@@ -147,12 +154,11 @@ int *parse_for_arguments(char *line) {
 		c++;
 	}
 	i = 0;
-	while (*c != ' ') {
+	while (*c != '\0') {
 		argst[i] = *c;
 		c++;
 		i++;
 	}
-	argst[i++] = '\0';
 	args[0] = atoi(strtok(argsf, ","));
 	args[1] = atoi(strtok(NULL, "\0"));
 	args[2] = atoi(strtok(argst, ","));
