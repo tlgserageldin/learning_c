@@ -38,17 +38,18 @@ After following the instructions, how many lights are lit?
 #define MAXLINELEN 100
 #define MAXARGSSIZE 20
 
-void toggle_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
-void turnon_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
-void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
+void toggle_lights(unsigned int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
+void turnon_lights(unsigned int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
+void turnoff_lights(unsigned int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y);
+void reset_lights(unsigned int array[1000][1000]);
 int parse_for_command(char *line);
 int *parse_for_arguments(char *line);
 int is_element(char e, char *list, int len);
-unsigned long count_lights(int array[1000][1000]);
+unsigned long count_lights(unsigned int array[1000][1000]);
 
 int main(void) {
-	int lights[1000][1000];
-	turnoff_lights(lights, 0, 0, 999, 999);
+	unsigned int lights[1000][1000];
+	reset_lights(lights);
 	assert(count_lights(lights) == 0);
 	char line[MAXLINELEN];
 	FILE *input = fopen("aoc_2015_6_input.txt", "r");
@@ -73,29 +74,27 @@ int main(void) {
 	return 0;
 }
 
-void toggle_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
+void toggle_lights(unsigned int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
 	for (int i = fcoord_y; i <= tcoord_y; i++) {
 		for (int j = fcoord_x; j <= tcoord_x; j++) {
-			if (array[i][j] == ON) {
-				array[i][j] = OFF;
-			} else {
-				array[i][j] = ON;
-			}
+				array[i][j] += 2;
 		}
 	}
 }
-void turnon_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
+void turnon_lights(unsigned int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
 	for (int i = fcoord_y; i <= tcoord_y; i++) {
 		for (int j = fcoord_x; j <= tcoord_x; j++) {
-				array[i][j] = ON;
+				array[i][j] += 1;
 		}
 	}
 }
 
-void turnoff_lights(int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
+void turnoff_lights(unsigned int array[1000][1000], int fcoord_x, int fcoord_y, int tcoord_x, int tcoord_y) {
 	for (int i = fcoord_y; i <= tcoord_y; i++) {
 		for (int j = fcoord_x; j <= tcoord_x; j++) {
-				array[i][j] = OFF;
+			if (!(array[i][j] == 0)) {
+				array[i][j] -= 1;
+			}
 		}
 	}
 }
@@ -174,14 +173,22 @@ int is_element(char e, char *list, int len) {
 	return FALSE;
 }
 
-unsigned long count_lights(int array[1000][1000]) {
-	unsigned long count = 0;
+unsigned long count_lights(unsigned int array[1000][1000]) {
+	unsigned long brightness = 0;
 	for (int i = 0; i < 1000; i++) {
 		for (int j = 0; j < 1000; j++) {
-			if (array[i][j] == ON) {
-				count++;
+			if (array[i][j] > 0) {
+				brightness += array[i][j];
 			}
 		}
 	}
-	return count;
+	return brightness;
+}
+
+void reset_lights(unsigned int array[1000][1000]) {
+	for (int i = 0; i < 1000; i++) {
+		for (int j = 0; j < 1000; j++) {
+			array[i][j] = 0;
+		}
+	}
 }
