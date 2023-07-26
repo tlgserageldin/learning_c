@@ -22,9 +22,6 @@ void swap_rows(size_t N, size_t M, size_t row1, size_t row2, double matrix[M][N]
 void invert_matrix(size_t N, double matrix[N][N]);
 double det_matrix(size_t N, double matrix[N][N]);
 
-#define TRUE 1
-#define FALSE 0
-
 #define MROWS 4
 #define MCOLS 4
 
