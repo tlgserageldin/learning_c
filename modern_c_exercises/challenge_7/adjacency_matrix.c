@@ -4,7 +4,11 @@ The adjacency matrix of a graph G is a matrix A that holds a value true or false
     -- every element of that row is the other nodes
 At this point, can you use an adjacency matrix to conduct a breadth-first search in a graph G?
 Can you find connected components?
+    -- isn't this intrinsic in the adjacency graph?
 Can you find a spanning tree?
+    -- tf is a spanning tree?
+    -- tree: any two node are connect by **exactly** on edge
+    so it's a sub-graph where the nodes of the tree are the ones connected once?
 */
 #include <assert.h>
 #include <stddef.h>
@@ -61,6 +65,9 @@ size_t dfs_matrix(size_t key, size_t row, size_t n_elem, size_t matrix[n_elem][n
         }
     }
     return FALSE;
+}
+
+size_t has_spanning_tree(size_t n_elem, size_t matrix[n_elem][n_elem]) {
 }
 
 int main(void) {
