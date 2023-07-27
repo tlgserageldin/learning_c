@@ -1,14 +1,18 @@
 /*
 The adjacency matrix of a graph G is a matrix A that holds a value true or false in element A[i][j] if there is an arc from node i to node j.
     -- every row is a node on the tree
-    -- every element of that row is the other nodes
+    -- every element of that row is the other nodes + itself for simplicity
 At this point, can you use an adjacency matrix to conduct a breadth-first search in a graph G?
+    -- yes.
 Can you find connected components?
     -- isn't this intrinsic in the adjacency graph?
+    -- OOO this means find all nodes that are connected
 Can you find a spanning tree?
     -- tf is a spanning tree?
     -- tree: any two node are connect by **exactly** on edge
     so it's a sub-graph where the nodes of the tree are the ones connected once?
+    i cannot return arrays yet, what is the return type? do i pass in an array?
+    i will pass in an array.
 */
 #include <assert.h>
 #include <stddef.h>
@@ -20,13 +24,25 @@ Can you find a spanning tree?
 #define FALSE 0
 #define ELEMENTS 5
 
-void print_array(size_t n, size_t array[n]) {
-    for (size_t i = 0; i < n; ++i) {
+// print array of n_elem elements
+void print_array(size_t n_elem, size_t array[n_elem]) {
+    for (size_t i = 0; i < n_elem; ++i) {
         printf("array[%zu]: %zu ", i, array[i]);
     }
     printf("\n\n");
 }
 
+// edit the passed tree_arr in place. will fill non-used array elems with SIZE_MAX
+void find_spanning_tree(size_t n_elem, size_t tree_arr[n_elem], size_t matrix[n_elem][n_elem]) {
+}
+
+// return number of connect nodes to any given node
+size_t count_connected_nodes(size_t node, size_t n_elem, size_t matrix[n_elem][n_elem]){
+    size_t count = 0;
+    return count;
+}
+
+// search an size_t array for key
 size_t search_array(size_t key, size_t n_elem, size_t array[n_elem]) {
     for (size_t i = 0; i < n_elem; ++i) {
         if (array[i] == key) {
@@ -36,7 +52,8 @@ size_t search_array(size_t key, size_t n_elem, size_t array[n_elem]) {
     return FALSE;
 }
 
-size_t dfs_matrix(size_t key, size_t row, size_t n_elem, size_t matrix[n_elem][n_elem]) {
+// depth first search of a adjacency matrix
+size_t dfs_matrix(size_t key, size_t node, size_t n_elem, size_t matrix[n_elem][n_elem]) {
     size_t to_search[n_elem];
     size_t searched[n_elem];
     size_t ts_e = 0, s_e = 0;
@@ -44,7 +61,7 @@ size_t dfs_matrix(size_t key, size_t row, size_t n_elem, size_t matrix[n_elem][n
     for (size_t i = 0; i < n_elem; ++i) {
         searched[i] = SIZE_MAX; // set all of searched into garbage value so no accidental hits
     }
-    to_search[ts_e] = row;
+    to_search[ts_e] = node;
     ++ts_e; //load the first item into to search
     while (ts_e) { //while # of to search elements is non-zero
         curr = to_search[ts_e-1];
@@ -67,9 +84,6 @@ size_t dfs_matrix(size_t key, size_t row, size_t n_elem, size_t matrix[n_elem][n
     return FALSE;
 }
 
-size_t has_spanning_tree(size_t n_elem, size_t matrix[n_elem][n_elem]) {
-}
-
 int main(void) {
     size_t adjacency[ELEMENTS][ELEMENTS] = {{FALSE, FALSE, TRUE, FALSE, TRUE},
                                             {FALSE, FALSE, FALSE, TRUE, FALSE},
@@ -80,6 +94,5 @@ int main(void) {
     assert(dfs_matrix(4, 0, ELEMENTS, adjacency) == TRUE);
     assert(dfs_matrix(4, 2, ELEMENTS, adjacency) == TRUE);
     assert(dfs_matrix(4, 1, ELEMENTS, adjacency) == FALSE);
-
     return 0;
 }
