@@ -24,6 +24,28 @@ Can you find a spanning tree?
 #define FALSE 0
 #define ELEMENTS 5
 
+// depth first search of a adjacency matrix
+size_t dfs_matrix(size_t key, size_t node, size_t n_elem, size_t matrix[n_elem][n_elem]);
+// search an size_t array for key
+size_t search_array(size_t key, size_t n_elem, size_t array[n_elem]);
+// print array of n_elem elements
+void print_array(size_t n_elem, size_t array[n_elem]);
+// edit the passed tree_arr in place. will fill non-used array elems with SIZE_MAX
+void find_spanning_tree(size_t n_elem, size_t tree_arr[n_elem], size_t matrix[n_elem][n_elem]);
+// return number of connect nodes to any given node
+size_t count_connected_nodes(size_t node, size_t n_elem, size_t matrix[n_elem][n_elem]);
+
+int main(void) {
+    size_t adjacency[ELEMENTS][ELEMENTS] = {{FALSE, FALSE, TRUE, FALSE, TRUE},
+                                            {FALSE, FALSE, FALSE, TRUE, FALSE},
+                                            {TRUE, FALSE, FALSE, FALSE, TRUE},
+                                            {FALSE, TRUE, FALSE, FALSE, FALSE},
+                                            {FALSE, FALSE, TRUE, FALSE, FALSE}};
+    assert(count_connected_nodes(1, ELEMENTS, adjacency) == 2);
+    assert(count_connected_nodes(0, ELEMENTS, adjacency) == 3);
+    return 0;
+}
+
 // print array of n_elem elements
 void print_array(size_t n_elem, size_t array[n_elem]) {
     for (size_t i = 0; i < n_elem; ++i) {
@@ -38,7 +60,30 @@ void find_spanning_tree(size_t n_elem, size_t tree_arr[n_elem], size_t matrix[n_
 
 // return number of connect nodes to any given node
 size_t count_connected_nodes(size_t node, size_t n_elem, size_t matrix[n_elem][n_elem]){
-    size_t count = 0;
+    size_t to_search[n_elem];
+    size_t searched[n_elem];
+    size_t ts_e = 0, s_e = 0;
+    size_t curr, count = 0;
+    for (size_t i = 0; i < n_elem; ++i) {
+        searched[i] = SIZE_MAX; // set all of searched into garbage value so no accidental hits
+    }
+    to_search[ts_e] = node;
+    ++ts_e; //load the first item into to search
+    while (ts_e) { //while # of to search elements is non-zero
+        curr = to_search[ts_e-1];
+        --ts_e; //load latest ts_e into curr
+        if (!search_array(curr, n_elem, searched)) { //if curr has not already been searched
+            ++count;
+            for (size_t i = 0; i < n_elem; ++i) { //add all linked nodes to be searched
+                if (matrix[curr][i] == TRUE) {
+                    to_search[ts_e] = i;
+                    ++ts_e;
+                }
+            }
+            searched[s_e] = curr; //add curr to searched
+            ++s_e;
+        }
+    }
     return count;
 }
 
@@ -82,17 +127,4 @@ size_t dfs_matrix(size_t key, size_t node, size_t n_elem, size_t matrix[n_elem][
         }
     }
     return FALSE;
-}
-
-int main(void) {
-    size_t adjacency[ELEMENTS][ELEMENTS] = {{FALSE, FALSE, TRUE, FALSE, TRUE},
-                                            {FALSE, FALSE, FALSE, TRUE, FALSE},
-                                            {TRUE, FALSE, FALSE, FALSE, TRUE},
-                                            {FALSE, TRUE, FALSE, FALSE, FALSE},
-                                            {FALSE, FALSE, TRUE, FALSE, FALSE}};
-    assert(dfs_matrix(1, 3, ELEMENTS, adjacency) == TRUE);
-    assert(dfs_matrix(4, 0, ELEMENTS, adjacency) == TRUE);
-    assert(dfs_matrix(4, 2, ELEMENTS, adjacency) == TRUE);
-    assert(dfs_matrix(4, 1, ELEMENTS, adjacency) == FALSE);
-    return 0;
 }
