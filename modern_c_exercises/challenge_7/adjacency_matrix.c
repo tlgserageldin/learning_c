@@ -52,6 +52,7 @@ int main(void) {
                                              {TRUE, TRUE, FALSE, FALSE, FALSE},
                                              {FALSE, FALSE, FALSE, FALSE, TRUE},
                                              {FALSE, FALSE, FALSE, TRUE, FALSE}};
+    size_t spanning_tree[ELEMENTS][ELEMENTS];
     assert(dfs_matrix(0, 1, ELEMENTS, adjacency) == TRUE);
     assert(dfs_matrix(3, 0, ELEMENTS, adjacency3) == FALSE);
     assert(dfs_matrix(2, 0, ELEMENTS, adjacency2) == TRUE);
@@ -70,7 +71,40 @@ void print_array(size_t n_elem, size_t array[n_elem]) {
 }
 
 // edit the passed tree_arr in place. will fill non-used array elems with SIZE_MAX
+// connect each vertex except root to vertex it was discovered
 void find_spanning_tree(size_t root, size_t n_elem, size_t tree_matrix[n_elem][n_elem], size_t matrix[n_elem][n_elem]) {
+    size_t searched[n_elem];
+    size_t to_search[n_elem];
+    size_t ts_e = 1, s_e = 0, curr = 0;
+    // sanitize tree_matrix and searched
+    for (size_t i = 0; i < n_elem; ++i) {
+        for (size_t j = 0; j < n_elem; ++j) {
+            tree_matrix[i][j] = FALSE;
+        }
+    }
+    for (size_t i = 0; i < n_elem; ++i) {
+        searched[i] = SIZE_MAX;
+    }
+    // load root into to_search
+    // wanted to get rid of it, but for the sake of the while loop this seems best
+    to_search[ts_e] = root;
+    ++ts_e;
+    while (ts_e) {
+        curr = to_search[--ts_e];
+        if (!search_array(curr, n_elem, searched)) {
+            // add children to be searched
+            for (size_t i = 0; i < n_elem; ++i) {
+                if (matrix[curr][i] == TRUE) {
+                    to_search[ts_e] = i;
+                    ++ts_e;
+                    // link children to parent node
+                    tree_matrix[i][curr] = TRUE;
+                }
+            }
+        }
+        searched[s_e] = curr;
+        ++s_e;
+    }
 }
 
 // return number of connect nodes to any given node
@@ -85,8 +119,7 @@ size_t count_connected_nodes(size_t node, size_t n_elem, size_t matrix[n_elem][n
     to_search[ts_e] = node;
     ++ts_e; //load the first item into to search
     while (ts_e) { //while # of to search elements is non-zero
-        curr = to_search[ts_e-1];
-        --ts_e; //load latest ts_e into curr
+        curr = to_search[--ts_e];
         if (!search_array(curr, n_elem, searched)) { //if curr has not already been searched
             for (size_t i = 0; i < n_elem; ++i) { //add all linked nodes to be searched
                 if (matrix[curr][i] == TRUE) {
@@ -124,8 +157,7 @@ size_t dfs_matrix(size_t key, size_t node, size_t n_elem, size_t matrix[n_elem][
     to_search[ts_e] = node;
     ++ts_e; //load the first item into to search
     while (ts_e) { //while # of to search elements is non-zero
-        curr = to_search[ts_e-1];
-        --ts_e; //load latest ts_e into curr
+        curr = to_search[--ts_e];
         if (!search_array(curr, s_e, searched)) { //if curr has not already been searched
             if (curr == key) { //if curr is key, done
                 return TRUE;
