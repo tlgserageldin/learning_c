@@ -25,6 +25,8 @@ Can you find a spanning tree?
 #define FALSE 0
 #define ELEMENTS 5
 
+// print square matrix of n_elem elements
+void print_matrix(size_t n_elem, size_t matrix[n_elem][n_elem]);
 // depth first search of a adjacency matrix
 size_t dfs_matrix(size_t key, size_t node, size_t n_elem, size_t matrix[n_elem][n_elem]);
 // search an size_t array for key
@@ -59,7 +61,19 @@ int main(void) {
     assert(count_connected_nodes(0, ELEMENTS, adjacency2) == 4);
     assert(count_connected_nodes(0, ELEMENTS, adjacency3) == 2);
     assert(count_connected_nodes(3, ELEMENTS, adjacency3) == 1);
+    find_spanning_tree(0, ELEMENTS, spanning_tree, adjacency);
+    print_matrix(ELEMENTS, spanning_tree);
     return 0;
+}
+
+// print square matrix of n_elem elements
+void print_matrix(size_t n_elem, size_t matrix[n_elem][n_elem]) {
+    for (size_t i = 0; i < n_elem; ++i) {
+        for (size_t j = 0; j < n_elem; ++j) {
+            printf("matrix[%zu][%zu]=%zu ", i, j, matrix[i][j]);
+        }
+        printf("\n\n");
+    }
 }
 
 // print array of n_elem elements
@@ -72,38 +86,35 @@ void print_array(size_t n_elem, size_t array[n_elem]) {
 
 // edit the passed tree_arr in place. will fill non-used array elems with SIZE_MAX
 // connect each vertex except root to vertex it was discovered
-void find_spanning_tree(size_t root, size_t n_elem, size_t tree_matrix[n_elem][n_elem], size_t matrix[n_elem][n_elem]) {
+void find_spanning_tree(size_t root, size_t n_elem, size_t spanning_tree_matrix[n_elem][n_elem], size_t matrix[n_elem][n_elem]) {
     size_t searched[n_elem];
     size_t to_search[n_elem];
-    size_t ts_e = 1, s_e = 0, curr = 0;
-    // sanitize tree_matrix and searched
+    size_t searched_e = 0, to_search_e = 0;
+    size_t current = 0;
+    // initialize spanning_tree_matrix
     for (size_t i = 0; i < n_elem; ++i) {
         for (size_t j = 0; j < n_elem; ++j) {
-            tree_matrix[i][j] = FALSE;
+            spanning_tree_matrix[i][j] = FALSE;
         }
     }
-    for (size_t i = 0; i < n_elem; ++i) {
-        searched[i] = SIZE_MAX;
-    }
-    // load root into to_search
-    // wanted to get rid of it, but for the sake of the while loop this seems best
-    to_search[ts_e] = root;
-    ++ts_e;
-    while (ts_e) {
-        curr = to_search[--ts_e];
-        if (!search_array(curr, n_elem, searched)) {
-            // add children to be searched
-            for (size_t i = 0; i < n_elem; ++i) {
-                if (matrix[curr][i] == TRUE) {
-                    to_search[ts_e] = i;
-                    ++ts_e;
-                    // link children to parent node
-                    tree_matrix[i][curr] = TRUE;
+    to_search[to_search_e] = root;
+    ++to_search_e;
+    while (to_search_e) {
+        current = to_search[--to_search_e];
+        for (size_t i = 0; i < n_elem; ++i) {
+            if (matrix[current][i] == TRUE) {
+                if (!search_array(i, searched_e, searched)) {
+                    if (!search_array(i, to_search_e, to_search)) {
+                        spanning_tree_matrix[current][i] = TRUE;
+                        spanning_tree_matrix[i][current] = TRUE;
+                    }
+                    to_search[to_search_e] = i;
+                    ++to_search_e;
                 }
             }
         }
-        searched[s_e] = curr;
-        ++s_e;
+        searched[searched_e] = current;
+        ++searched_e;
     }
 }
 
