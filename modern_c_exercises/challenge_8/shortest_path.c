@@ -45,7 +45,7 @@ void shortest_path(size_t start, size_t finish, size_t n_elem, size_t path[n_ele
     size_t cost[n_elem];
     size_t searched[n_elem];
     size_t to_search[n_elem];
-    size_t path_e = 0, to_search_e = 0, searched_e = 0, current = 0;
+    size_t to_search_e = 0, searched_e = 0, current = 0;
     for (size_t i = 0; i < n_elem; ++i) {
         cost[i] = SIZE_MAX;
         path[i] = SIZE_MAX;
@@ -73,14 +73,20 @@ void shortest_path(size_t start, size_t finish, size_t n_elem, size_t path[n_ele
         searched[searched_e] = current;
         searched_e++;
     }
-    path[0] = finish;
+    size_t t_path[n_elem];
+    size_t t_path_e = 0; 
+    t_path[0] = finish;
     for (size_t i = 1; i < n_elem; ++i) {
-        path[i] = parent[path[i-1]];
-        ++path_e;
-        if (!parent[path[i-1]]) {
+        t_path[i] = parent[t_path[i-1]];
+        ++t_path_e;
+        if (parent[t_path[i-1]] == start) {
             break;
         }
     }
+    for (size_t i = 0; t_path_e-i != 0; ++i) {
+        path[i] = t_path[t_path_e-i];
+    }
+    path[t_path_e] = finish;
 }
 
 int main(void) {
@@ -89,7 +95,7 @@ int main(void) {
                                            {2, 3, SIZE_MAX, 5},
                                            {SIZE_MAX, 1, 5, SIZE_MAX}};
     size_t path[ELEMENTS];
-    shortest_path(0, 3, ELEMENTS, path, distance);
+    shortest_path(0, 1, ELEMENTS, path, distance);
     print_array(ELEMENTS, path);
     return 0;
 }
