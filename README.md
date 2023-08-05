@@ -3,7 +3,7 @@
 
 # Problems
 ## Modern C
-Challenges 1,2,4,6
+Challenges 1,2,4,6,7,8,9
 ## [Advent Of Code](https://adventofcode.com/)
 ### 2015
 1, 2, 3, 5, 6
