@@ -6,25 +6,90 @@ on arrays with sort keys such as double or strings to your liking?
 
 Can you provide a simple test routine.
 */
+#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
 #include <assert.h>
 
-// returns 0 or 1 if the double array of n_elems is sorted
-size_t is_double_array_sorted(size_t n_elems, double const array[n_elems]);
+// returns 0 or 1 if the double array of n elems is sorted
+size_t is_double_array_sorted(size_t const n, double const array[n]);
+// print double array of n elements
+void print_double_array(size_t const n, double const array[n]);
+// in-place merge sort of a double array of n elements
+void merge_sort_double(size_t const n, double array[n]);
+// in-place quick sort of a double array of n elements
+void quick_sort_double(size_t const n, double array[n]);
 
 int main(int argc, char* argv[argc+1]) {
+    double test_array[] = { 1.0, 0.0, 2.4, 2.3 };
+    double test_array_1[] = { 0.0, 1.0, 0.0, 2.4, 2.3 };
+    merge_sort_double(sizeof(test_array_1), test_array_1);
     return EXIT_SUCCESS;
 }
 
-// checks a double array of n_elems length for ascending order
-size_t is_double_array_sorted(size_t n_elems, double const array[n_elems]) {
+size_t is_double_array_sorted(size_t const n, double const array[n]) {
     double prev = array[0];
-    for (size_t i = 1; i < n_elems; i++) {
+    for (size_t i = 1; i < n; i++) {
         if (array[i] < prev) {
             return EXIT_FAILURE;
         }
         prev = array[i];
     }
     return EXIT_SUCCESS;
+}
+
+void print_double_array(size_t const n, double const array[n]) {
+    for (size_t i = 0; i < n; i++) {
+        printf("array[%zu] = %f\n", i, array[i]);
+    }
+}
+
+void merge_sort_double(size_t const n, double array[n]) {
+    // base case
+    if (n == 1) {
+        return;
+    }
+    // create the two smaller arrays to recursively call from
+    size_t l_array_e;
+    size_t r_array_e;
+    if (n % 2) {
+        l_array_e = n/2;
+        r_array_e = n/2+1;
+    } else {
+        l_array_e = r_array_e = n/2;
+    }
+    double l_array[l_array_e];
+    double r_array[r_array_e];
+    // populate the arrays
+    for (size_t i = 0; i < l_array_e; i++) {
+        l_array[i] = array[i];
+    }
+    for (size_t i = 0; i < r_array_e; i++) {
+        r_array[i] = array[i+l_array_e];
+    }
+    // recursive call
+    merge_sort_double(l_array_e, l_array);
+    merge_sort_double(r_array_e, r_array);
+    // reconstruct array
+    size_t l_idx = 0;
+    size_t r_idx = 0;
+    for (size_t i = 0; i < n; i++) {
+        if (l_idx == l_array_e) { // if l_array is exhausted
+            array[i] = r_array[r_idx];
+            r_idx++;
+        } else if (r_idx == r_array_e) { // if r_array is exhausted
+            array[i] = l_array[l_idx];
+            l_idx++;
+        } else if (l_array[l_idx] <= r_array[r_idx]) { // if l_array elem is smaller than the r_array elem
+            array[i] = l_array[l_idx];
+            l_idx++;
+        } else if (l_array[l_idx] > r_array[r_idx]) {
+            array[i] = r_array[r_idx];
+            r_idx++;
+        }
+    }
+}
+
+void quick_sort_double(size_t const n, double array[n]) {
 }
